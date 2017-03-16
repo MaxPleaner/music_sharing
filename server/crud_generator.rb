@@ -19,11 +19,13 @@ module Sinatra
       end
     end
 
+    # See the sinatra_sockets README for info on these options
     def crud_generate(
       resource:, resource_class:, root_path: '/',
       cross_origin_opts: nil, auth: nil,
       index: nil, create: nil, read: nil, update: nil, destroy: nil,
-      except: []
+      except: [],
+      secure_params: nil
     )
 
       # the auth argument is a proc that can be used to disallow some requests.
@@ -58,7 +60,7 @@ module Sinatra
         ArgumentError, "resource does not have a simple plural"
       ) unless plural.eql?(resource + "s")
       
-      default_secure_params_proc = get_default_secure_params(resource_class)
+      secure_params_proc = secure_params || get_default_secure_params(resource_class)
 
       index ||= {}
       index = {
@@ -73,7 +75,7 @@ module Sinatra
         method: :post,
         path: "/#{plural}",
         auth: auth || Proc.new { |request| false },
-        secure_params: default_secure_params_proc 
+        secure_params: secure_params_proc 
       }.merge(create)
 
       read ||= {}
@@ -88,7 +90,7 @@ module Sinatra
         method: :put,
         path: "/#{resource}",
         auth: auth || Proc.new { |request| false },
-        secure_params: default_secure_params_proc
+        secure_params: secure_params_proc
       }.merge(update)
 
       destroy ||= {}
@@ -116,9 +118,9 @@ module Sinatra
           auth_result = create[:auth].call(request)
           return auth_result if auth_result
           filtered_params = params.select do |key, val|
-            key.in? *create[:secure_params].call(request)
+            key.in? create[:secure_params].call(request)
           end
-          created = resource_class.create(filtered_params)
+          created = resource_class.new(filtered_params).tap(&:save)
           if created.persisted?
             { success: created.public_attributes }.to_json
           else
@@ -148,7 +150,7 @@ module Sinatra
           auth_result = update[:auth].call(request)
           return auth_result if auth_result
           filtered_params = params.select do |key, val|
-            key.in? *create[:secure_params].call(request)
+            key.in? create[:secure_params].call(request)
           end
           found = resource_class.find_by(id: params[:id])
           if found

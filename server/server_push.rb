@@ -4,7 +4,7 @@ module ServerPush
   # Can be overridden in model to limit who gets updates
   # Returns a list of sockets (by default all of them)
   def publish_to
-    Sockets.values.map(&:to_a).flatten
+    Sockets.to_a
   end
   
   def save(*args)

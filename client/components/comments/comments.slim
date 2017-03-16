@@ -1,0 +1,8 @@
+div#comments
+  input type='text' @keyup.enter='create_comment' placeholder='add comment (enter to save)'
+  ul
+    template v-for='(comment, id) in comments' 
+      li
+        input type='text' @keyup.enter='update_comment($event, comment)' :value="comment.text" placeholder='update comment (enter to save)'
+        button @click='delete_comment(comment)' delete
+

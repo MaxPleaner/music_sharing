@@ -1,7 +1,0 @@
-div#authenticator
-  div v-if='logged_in'
-    b logged in as {{ username }}
-    button @click='logout' logout
-    br
-  div v-else-if='token' 
-    a @click='open_in_new_tab' :href='authenticate_url' login with github

@@ -78,8 +78,7 @@ module.exports = load: ({deps: {$, Vue, Client}}) ->
       destroy = Object.assign {method: "delete", path: "#{resource}"}, destroy
 
       "index_#{resource}": ({commit}) -> new Promise (resolve, reject) =>
-        data = token: AppClient.Store.state.token
-        $[index.method] "#{root_path}#{index.path}", data, (response) ->
+        $[index.method] "#{root_path}#{index.path}", {}, (response) ->
           {success, error} = JSON.parse(response)
           if success
             commit("INDEX_#{resource.toUpperCase()}", success)
@@ -90,12 +89,11 @@ module.exports = load: ({deps: {$, Vue, Client}}) ->
             reject(error)
       
       "create_#{resource}": ({commit}, body) -> new Promise (resolve, reject) =>
-        data = Object.assign body, {token: AppClient.Store.state.token}
         $[create.method] "#{root_path}#{create.path}", body, (response) ->
           {success, error} = JSON.parse(response)
           if success
             commit("CREATE_#{resource.toUpperCase()}", success)
-            AppClient.Store.dispatch("add_notice", "created todo")
+            AppClient.Store.dispatch("add_notice", "created #{resource}")
             # Success object here is a new record
             resolve(success)
           else
@@ -103,12 +101,11 @@ module.exports = load: ({deps: {$, Vue, Client}}) ->
             reject(error)
 
       "destroy_#{resource}": ({commit}, {id}) -> new Promise (resolve, reject) =>
-        data = Object.assign {id}, {token: AppClient.Store.state.token}
-        $[destroy.method] "#{root_path}#{destroy.path}", data, (response) =>
+        $[destroy.method] "#{root_path}#{destroy.path}", {id}, (response) =>
           { success, error } = JSON.parse response
           if success
             commit "DESTROY_#{resource.toUpperCase()}", success
-            AppClient.Store.dispatch("add_notice", "destroyed todo")
+            AppClient.Store.dispatch("add_notice", "destroyed #{resource}")
             # Success object here is the deleted record
             resolve(success)
           else
@@ -116,12 +113,11 @@ module.exports = load: ({deps: {$, Vue, Client}}) ->
             reject(error)
 
       "update_#{resource}": ({commit}, body) -> new Promise (resolve, reject) =>
-        data = Object.assign body, {token: AppClient.Store.state.token}
         $[update.method] "#{root_path}#{update.path}", body, (response) =>
           { success, error } = JSON.parse response
           if success
             commit "UPDATE_#{resource.toUpperCase()}", success
-            AppClient.Store.dispatch("add_notice", "updated todo")
+            AppClient.Store.dispatch("add_notice", "updated #{resource}")
             # Success object here is the deleted record
             resolve(success)
           else

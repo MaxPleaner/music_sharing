@@ -1,0 +1,15 @@
+div#audio-input
+  
+  b add an audio
+
+  select @change='change_source'
+    option disabled='' value='' selected='' Plese select one
+    option bandcamp
+    option soundcloud
+    option youtube
+    option custom
+
+  bandcamp-input   v-if="bandcamp_is_selected"
+  youtube-input    v-if="youtube_is_selected"
+  soundcloud-input v-if="soundcloud_is_selected"
+  custom-input     v-if="custom_is_selected"

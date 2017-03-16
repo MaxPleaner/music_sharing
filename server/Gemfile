@@ -17,3 +17,7 @@ group :production do
 end
 gem "rake"
 gem 'activesupport'
+
+gem 'nokogiri'
+
+gem "open_uri_redirections"

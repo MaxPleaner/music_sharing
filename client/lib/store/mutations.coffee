@@ -1,15 +1,15 @@
 module.exports = load: ({deps: {Vue, CrudMapper}}) ->
 
-  todos_crud = CrudMapper.add_mutations
-    resource: "todo"
-
-  auth = 
-    SET_TOKEN: (state, token) ->
-      Vue.set(state, "token", token)
-    SET_LOGGED_IN: (state, logged_in) ->
-      Vue.set(state, "logged_in", logged_in)
-    SET_USERNAME: (state, username) ->
-      Vue.set(state, "username", username)
+  crud = Object.assign (
+    CrudMapper.add_mutations
+      resource: "audio"
+  ), (
+    CrudMapper.add_mutations
+      resource: "comment"
+  ), (
+    CrudMapper.add_mutations
+      resource: "tag"
+  )
 
   errors = 
     PUSH_ERROR: (state, error) ->
@@ -25,7 +25,11 @@ module.exports = load: ({deps: {Vue, CrudMapper}}) ->
       Vue.set state, "notices", state.notices
     SHIFT_NOTICE: (state) ->
       state.notices.shift()
-      Vue.set state, "notices", state.notices      
+      Vue.set state, "notices", state.notices
 
-  Object.assign(todos_crud, auth, errors, notices)
+  ui_state =
+    CHANGE_SOURCE: (state, val) ->
+      Vue.set state, 'source', val
+
+  Object.assign(crud, errors, notices, ui_state)
 

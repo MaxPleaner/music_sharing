@@ -1,7 +1,13 @@
 module.exports = load: ({deps: {CrudMapper}}) ->
   Object.assign (
     CrudMapper.add_store_actions
-      resource: "todo"
+      resource: "audio"
+  ), (
+    CrudMapper.add_store_actions
+      resource: "tag"
+  ), (
+    CrudMapper.add_store_actions
+      resource: "comment"
   ), (
 
     # Both errors and notices are rendered by the "notices" component

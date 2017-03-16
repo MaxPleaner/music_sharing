@@ -10,12 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170312215739) do
+ActiveRecord::Schema.define(version: 20170316201312) do
 
-  create_table "todos", force: :cascade do |t|
-    t.string   "text"
+  create_table "audios", force: :cascade do |t|
+    t.string   "source"
+    t.string   "embed_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.integer "audio_id"
+    t.text    "content"
+    t.index ["audio_id"], name: "index_comments_on_audio_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.integer "audio_id"
+    t.string  "name"
+    t.index ["audio_id"], name: "index_tags_on_audio_id"
   end
 
 end
