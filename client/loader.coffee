@@ -45,6 +45,23 @@ $ ->
   else
     "http://localhost:3000/health"
 
-  $.get server_health_url, (response) ->
-     window.AppClient = new deps.Client({deps})
-     AppClient.init()
+  $.get server_health_url, ->
+
+    window.AppClient = new deps.Client({deps})
+    AppClient.attach_vue_to_dom()
+    AppClient.attach_stylesheet_to_dom()
+
+    AppClient.Store.commit "DONE_LOADING", true
+
+    pass = window.location.search.split("?pass=")[1]
+
+    AppClient.Store.dispatch("authenticate", {pass})
+    .then (server_token) ->
+      AppClient.Store.commit "SET_AUTHENTICATED", true
+      AppClient.Store.commit "SET_SERVER_TOKEN", server_token
+      AppClient.init_websockets()
+    .catch ->
+      AppClient.Store.commit "PUSH_ERROR", """
+        Failed to authenticate.
+        Please email maxpleaner@gmail.com for access
+      """     

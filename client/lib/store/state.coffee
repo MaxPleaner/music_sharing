@@ -5,4 +5,7 @@ module.exports = load: ({deps}) ->
   tags: {}
   taggings: {}
   comments: {}
+  done_loading: false
+  authenticated: false
+  server_token: null
   source: null

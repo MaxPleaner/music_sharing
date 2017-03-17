@@ -33,11 +33,6 @@ module.exports = class Client
     } = deps
     @root = @root_constructor.activate({ @Router, @components })
     @anchor = @$("#vue-anchor")[0]
-
-  init: ->
-    @attach_vue_to_dom()
-    @init_websockets()
-    @attach_stylesheet_to_dom()
   
   attach_vue_to_dom: ->
     @root.$mount @anchor
@@ -46,7 +41,8 @@ module.exports = class Client
     require("./style/app.sass")
 
   init_websockets: =>
-    @ws = new WebSocket "#{@ws_base_url}/ws"
+    server_token = AppClient.Store.state.server_token
+    @ws = new WebSocket "#{@ws_base_url}/ws?server_token=#{server_token}"
     @ws.onopen = @ws_onopen
     @ws.onmessage = @ws_onmessage
     @ws.onclose = @ws_onclose
@@ -60,6 +56,7 @@ module.exports = class Client
     @CrudMapper.process_ws_message(data)
 
   ws_onclose: (e) =>
+    window.e = e
     @ws_connect_interval ||= setInterval =>
       @init_websockets()
     , 500

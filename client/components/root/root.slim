@@ -5,5 +5,11 @@ div#home
     a href='http://github.com/maxpleaner/music_sharing' source code
 
   navbar
-
-  router-view
+  
+  #page v-if='done_loading'
+    #authenticated v-if='authenticated'
+      router-view
+    #unauthenticated v-else=''
+      b Unauthenticated
+  #loading v-else=''
+    h4 loading ...

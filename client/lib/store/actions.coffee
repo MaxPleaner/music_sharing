@@ -1,4 +1,4 @@
-module.exports = load: ({deps: {CrudMapper}}) ->
+module.exports = load: ({deps: {CrudMapper, $, Client}}) ->
   Object.assign (
     CrudMapper.add_store_actions
       resource: "audio"
@@ -28,5 +28,14 @@ module.exports = load: ({deps: {CrudMapper}}) ->
       setTimeout ->
         commit("SHIFT_NOTICE")
       , 2500
+
+    authenticate: ({commit}, {pass}) ->
+      new Promise (resolve, reject) =>
+        $.ajax
+          type: "POST",
+          url: "#{Client.prototype.base_url}/authenticate"
+          data: {pass}
+          success: resolve
+          error: reject
 
   )

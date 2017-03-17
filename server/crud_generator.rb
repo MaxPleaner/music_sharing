@@ -135,7 +135,7 @@ module Sinatra
           cross_origin(cross_origin_opts) if cross_origin_opts
           auth_result = read[:auth].call(request)
           return auth_result if auth_result
-          found = resource_class.find_by(id: params[:id])
+          found = resource_class.find_by(id: params["id"])
           if found
             { success: found.attributes }.to_json
           else
@@ -154,7 +154,7 @@ module Sinatra
           filtered_params = params.select do |key, val|
             key.in? param_whitelist
           end
-          found = resource_class.find_by(id: params[:id])
+          found = resource_class.find_by(id: params["id"])
           if found
             update[:secure_params].call.each do |key|
               found.send(:"#{key}=", params[key])
@@ -177,7 +177,7 @@ module Sinatra
           cross_origin(cross_origin_opts) if cross_origin_opts
           auth_result = destroy[:auth].call(request)
           return auth_result if auth_result
-          found = resource_class.find_by(id: params[:id])
+          found = resource_class.find_by(id: params["id"])
           if found
             found.destroy!
             { success: found.attributes }.to_json

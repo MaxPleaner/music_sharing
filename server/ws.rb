@@ -10,7 +10,12 @@ class Ws
   end
 
   def self.onopen(request, ws)
-    Sockets << ws
+    server_token = CGI.parse(URI.parse(ws.url).query)["server_token"][0]
+    if server_token == ServerToken
+      Sockets << ws
+    else
+      ws.close(4999, "unauthenticated")
+    end
   end
 
   def self.onmessage(request, ws, msg_data)

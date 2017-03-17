@@ -34,6 +34,14 @@ module.exports = load: ({deps: {Vue, CrudMapper}}) ->
   ui_state =
     CHANGE_SOURCE: (state, val) ->
       Vue.set state, 'source', val
+    DONE_LOADING: (state, val) ->
+      Vue.set state, 'done_loading', val
 
-  Object.assign(crud, errors, notices, ui_state)
+  auth =
+    SET_AUTHENTICATED: (state, val) ->
+      Vue.set state, 'authenticated', val
+    SET_SERVER_TOKEN: (state, val) ->
+      Vue.set state, 'server_token', val
+
+  Object.assign(crud, errors, notices, ui_state, auth)
 

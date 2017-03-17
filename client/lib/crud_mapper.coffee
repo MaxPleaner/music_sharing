@@ -78,7 +78,9 @@ module.exports = load: ({deps: {$, Vue, Client}}) ->
       destroy = Object.assign {method: "delete", path: "#{resource}"}, destroy
 
       "index_#{resource}": ({commit}) -> new Promise (resolve, reject) =>
-        $[index.method] "#{root_path}#{index.path}", {}, (response) ->
+        server_token = AppClient.Store.state.server_token
+        payload = { server_token }
+        $[index.method] "#{root_path}#{index.path}", payload, (response) ->
           {success, error} = JSON.parse(response)
           if success
             commit("INDEX_#{resource.toUpperCase()}", success)
@@ -89,7 +91,9 @@ module.exports = load: ({deps: {$, Vue, Client}}) ->
             reject(error)
       
       "create_#{resource}": ({commit}, body) -> new Promise (resolve, reject) =>
-        $[create.method] "#{root_path}#{create.path}", body, (response) ->
+        server_token = AppClient.Store.state.server_token
+        payload = Object.assign { server_token }, body
+        $[create.method] "#{root_path}#{create.path}", payload, (response) ->
           {success, error} = JSON.parse(response)
           if success
             commit("CREATE_#{resource.toUpperCase()}", success)
@@ -101,7 +105,9 @@ module.exports = load: ({deps: {$, Vue, Client}}) ->
             reject(error)
 
       "destroy_#{resource}": ({commit}, {id}) -> new Promise (resolve, reject) =>
-        $[destroy.method] "#{root_path}#{destroy.path}", {id}, (response) =>
+        server_token = AppClient.Store.state.server_token
+        payload = { server_token, id }
+        $[destroy.method] "#{root_path}#{destroy.path}", payload, (response) =>
           { success, error } = JSON.parse response
           if success
             commit "DESTROY_#{resource.toUpperCase()}", success
@@ -113,7 +119,9 @@ module.exports = load: ({deps: {$, Vue, Client}}) ->
             reject(error)
 
       "update_#{resource}": ({commit}, body) -> new Promise (resolve, reject) =>
-        $[update.method] "#{root_path}#{update.path}", body, (response) =>
+        server_token = AppClient.Store.state.server_token
+        payload = Object.assign { server_token }, body
+        $[update.method] "#{root_path}#{update.path}", payload, (response) =>
           { success, error } = JSON.parse response
           if success
             commit "UPDATE_#{resource.toUpperCase()}", success
