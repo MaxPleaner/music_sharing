@@ -3,6 +3,7 @@ div#audio-index
     template
       div.audio
         button.destroy-button @click='destroy_audio(audio)' X
+        br
         span v-html='audio.embed_code'
         comments :audio='audio'
         taggings :audio='audio'
