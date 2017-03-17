@@ -13,27 +13,27 @@ class Audio < ActiveRecord::Base
   def set_embed_code
     case source
     when "bandcamp"
-      if url.blank?
+      if self.url.blank?
         errors.add "error, no url given"
         throw :abort
       end
-      page = Nokogiri.parse open(url, allow_redirections: :safe)
+      page = Nokogiri.parse open(self.url, allow_redirections: :safe)
       id_regex = Regexp.escape "tralbum_param: { name: \"album\", value: "
       unsafe_id = page.css("script").to_s.scan(/#{id_regex}(.+)\ }/).flatten.shift
-      id = ERB::Util.send(:html_escape, unsafe_id).to_i
+      album_id = ERB::Util.send(:html_escape, unsafe_id).to_i
       self.embed_code = <<-HTML
         <iframe
           style='border: 0, width 400[x, heiht: 373px'
-          src="https://bandcamp.com/EmbeddedPlayer/album=#{id}/size=large/bgcol=333333/linkcol=2ebd35/artwork=small/transparent=true/"
+          src="https://bandcamp.com/EmbeddedPlayer/album=#{album_id}/size=large/bgcol=333333/linkcol=2ebd35/artwork=small/transparent=true/"
           seamless=''
         ></iframe>
       HTML
     when "youtube"
-      if video_id.blank?
+      if self.video_id.blank?
         errors.add "error, no video_id given"
         throw :abort
       end
-      video_id = ERB::Util.send(:html_escape, video_id)
+      video_id = ERB::Util.send(:html_escape, self.video_id)
       self.embed_code = <<-HTML
         <iframe
           width="300"
