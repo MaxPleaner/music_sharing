@@ -41,7 +41,7 @@ Object.assign deps,
 $ ->
 
   server_health_url = if process.env["NODE_ENV"] == "production"
-    "https://vue-sinatra-boiler-demo.herokuapp.com/health"
+    "https://music-sharing.herokuapp.com/health"
   else
     "http://localhost:3000/health"
 

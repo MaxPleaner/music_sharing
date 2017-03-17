@@ -4,7 +4,7 @@ module.exports = class Client
 # Setup and private vars
 # ------------------------------------------------
 
-  prod_base_url = "vue-sinatra-boiler-demo.herokuapp.com"
+  prod_base_url = "music-sharing.herokuapp.com"
   dev_base_url = "localhost:3000"
 
   base_url = if process.env.NODE_ENV == "production" 
