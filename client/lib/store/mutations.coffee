@@ -9,7 +9,11 @@ module.exports = load: ({deps: {Vue, CrudMapper}}) ->
   ), (
     CrudMapper.add_mutations
       resource: "tag"
+  ), (
+    CrudMapper.add_mutations
+      resource: "tagging"
   )
+
 
   errors = 
     PUSH_ERROR: (state, error) ->

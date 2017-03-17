@@ -3,6 +3,10 @@ class Audio < ActiveRecord::Base
 
   attr_accessor :url, :video_id
 
+  has_many :taggings
+  has_many :tags, through: :taggings
+  has_many :comments
+
   validates :source, :embed_code, presence: true, allow_blank: false
 
   def public_attributes
@@ -11,47 +15,7 @@ class Audio < ActiveRecord::Base
 
   before_validation :set_embed_code
   def set_embed_code
-    case source
-    when "bandcamp"
-      if self.url.blank?
-        errors.add "error, no url given"
-        throw :abort
-      end
-      page = Nokogiri.parse open(self.url, allow_redirections: :safe)
-      id_regex = Regexp.escape "tralbum_param: { name: \"album\", value: "
-      unsafe_id = page.css("script").to_s.scan(/#{id_regex}(.+)\ }/).flatten.shift
-      album_id = ERB::Util.send(:html_escape, unsafe_id).to_i
-      self.embed_code = <<-HTML
-        <iframe
-          style='border: 0, width 400[x, heiht: 373px'
-          src="https://bandcamp.com/EmbeddedPlayer/album=#{album_id}/size=large/bgcol=333333/linkcol=2ebd35/artwork=small/transparent=true/"
-          seamless=''
-        ></iframe>
-      HTML
-    when "youtube"
-      if self.video_id.blank?
-        errors.add "error, no video_id given"
-        throw :abort
-      end
-      video_id = ERB::Util.send(:html_escape, self.video_id)
-      self.embed_code = <<-HTML
-        <iframe
-          width="300"
-          height="160"
-          src="https://www.youtube.com/embed/#{video_id}"
-          frameborder="0"
-          allowfullscreen
-        ></iframe>
-      HTML
-    when "soundcloud"
-      if url.blank?
-        errors.add "error, no url given"
-        throw :abort
-      end
-      api_path = "https://soundcloud.com/oembed?format=json&url=#{url}&maxwidth=300&maxheight=160"
-      self.embed_code = JSON.parse(open(api_path).read)["html"]
-    when "custom"
-    end
+    instance_eval &(EmbedUrl.build(self.source, self.url, self.video_id))
   rescue JSON::ParserError => e
     self.errors.add :base, "not a valid url"
     throw :abort
@@ -59,20 +23,58 @@ class Audio < ActiveRecord::Base
   
 end
 
-class Tag < ActiveRecord::Base
+class Tagging < ActiveRecord::Base
   include ServerPush
 
-  validates :audio, :name, presence: true, allow_blank: false
+  validates :audio, :tag, presence: true, allow_blank: false
+  validates_uniqueness_of :audio, scope: [:tag]
+
+  belongs_to :audio
+  belongs_to :tag
+
+  attr_accessor :name
 
   def public_attributes
     attributes
   end
+
+  before_validation :ensure_tag_exists
+  def ensure_tag_exists
+    unless self.name
+      errors.add :base, "no name passed to tag create"
+      throw :abort
+    end
+    self.tag_id = Tag.find_or_create_by(name: self.name).id
+  end
+
+  before_destroy :remove_tag_if_no_taggings
+  def remove_tag_if_no_taggings
+    tag.destroy if tag.taggings.count == 1
+  end
+
+end
+
+class Tag < ActiveRecord::Base
+
+  include ServerPush
+
+  has_many :taggings
+  has_many :audios, through: :taggings
+
+  validates :name, presence: true
+
+  def public_attributes
+    attributes
+  end
+
 end
 
 class Comment < ActiveRecord::Base
   include ServerPush
 
   validates :audio, :content, presence: true, allow_blank: false
+
+  belongs_to :audio
 
   def public_attributes
     attributes

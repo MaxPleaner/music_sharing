@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170316201312) do
+ActiveRecord::Schema.define(version: 20170317165401) do
 
   create_table "audios", force: :cascade do |t|
     t.string   "source"
@@ -25,10 +25,15 @@ ActiveRecord::Schema.define(version: 20170316201312) do
     t.index ["audio_id"], name: "index_comments_on_audio_id"
   end
 
-  create_table "tags", force: :cascade do |t|
+  create_table "taggings", force: :cascade do |t|
     t.integer "audio_id"
-    t.string  "name"
-    t.index ["audio_id"], name: "index_tags_on_audio_id"
+    t.integer "tag_id"
+    t.index ["audio_id"], name: "index_taggings_on_audio_id"
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "name"
   end
 
 end

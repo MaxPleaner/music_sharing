@@ -117,8 +117,9 @@ module Sinatra
           cross_origin(cross_origin_opts) if cross_origin_opts
           auth_result = create[:auth].call(request)
           return auth_result if auth_result
+          param_whitelist = create[:secure_params].call(request)
           filtered_params = params.select do |key, val|
-            key.in? create[:secure_params].call(request)
+            key.in? param_whitelist
           end
           created = resource_class.new(filtered_params).tap(&:save)
           if created.persisted?
@@ -149,8 +150,9 @@ module Sinatra
           cross_origin(cross_origin_opts) if cross_origin_opts
           auth_result = update[:auth].call(request)
           return auth_result if auth_result
+          param_whitelist = create[:secure_params].call(request)
           filtered_params = params.select do |key, val|
-            key.in? create[:secure_params].call(request)
+            key.in? param_whitelist
           end
           found = resource_class.find_by(id: params[:id])
           if found

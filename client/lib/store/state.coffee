@@ -3,5 +3,6 @@ module.exports = load: ({deps}) ->
   notices: []
   audios: {}
   tags: {}
+  taggings: {}
   comments: {}
   source: null

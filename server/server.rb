@@ -15,7 +15,7 @@ require './server_push'
 require './models'
 require './ws'
 require './db_config'
-
+require './embed_url'
 Sockets = Set.new
 
 CLIENT_BASE_URL = if ENV["RACK_ENV"] == "production"
@@ -50,24 +50,35 @@ class Server < Sinatra::Base
     resource: "audio",
     resource_class: Audio,
     cross_origin_opts: { allow_origin: CLIENT_BASE_URL },
-    except: [:update, :destroy],
+    except: [:update],
     secure_params: Proc.new do |request|
       %w{ source url video_id }
     end
   )
 
+  # Tags are created/destroyed through hooks on the tagging model
+  # They are only indexed here
   crud_generate(
     resource: "tag",
     resource_class: Tag,
     cross_origin_opts: { allow_origin: CLIENT_BASE_URL },
-    except: [:update, :destroy]
+    except: [:update, :destroy, :create]
   )
 
   crud_generate(
     resource: "comment",
     resource_class: Comment,
     cross_origin_opts: { allow_origin: CLIENT_BASE_URL },
-    except: [:update, :destroy]
+  )
+
+  crud_generate(
+    resource: "tagging",
+    resource_class: Tagging,
+    cross_origin_opts: { allow_origin: CLIENT_BASE_URL },
+    except: [:update],
+    secure_params: Proc.new do |request|
+      %w{ name audio_id }
+    end
   )
 
 end

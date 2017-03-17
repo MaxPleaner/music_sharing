@@ -6,6 +6,7 @@ module.exports = load: ({deps}) ->
   audios: require("./audios/audios.coffee").load { deps }
   comments: require("./comments/comments.coffee").load { deps }
   tags: require("./tags/tags.coffee").load { deps }
+  taggings: require("./taggings/taggings.coffee").load { deps }
   "audio-input": require("./audio-input/audio-input.coffee").load { deps }
   "audio-index": require("./audio-index/audio-index.coffee").load { deps }
   "bandcamp-input": require("./bandcamp-input/bandcamp-input.coffee").load { deps }

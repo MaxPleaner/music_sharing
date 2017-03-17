@@ -9,6 +9,9 @@ module.exports = load: ({deps: {CrudMapper}}) ->
     CrudMapper.add_store_actions
       resource: "comment"
   ), (
+    CrudMapper.add_store_actions
+      resource: "tagging"
+  ), (
 
     # Both errors and notices are rendered by the "notices" component
     # and expire after a few seconds.

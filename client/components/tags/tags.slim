@@ -1,8 +1,5 @@
 div#tags
-  input type='text' @keyup.enter='create_tag' placeholder='add tag (enter to save)'
-  ul
-    template v-for='(tag, id) in tags' 
-      li
-        input type='text' @keyup.enter='update_tag($event, tag)' :value="tag.text" placeholder='update tag (enter to save)'
-        button @click='delete_tag(tag)' delete
-
+  div tags
+  template v-for='(tag, id) in tags' 
+    .tag = "{{ tag.name }}"
+  .clearfix

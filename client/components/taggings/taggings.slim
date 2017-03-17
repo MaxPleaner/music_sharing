@@ -1,0 +1,8 @@
+.taggings
+  input type='text' @keyup.enter='create_tagging' placeholder='add tag'
+  template v-for='tag in taggings'
+    div
+      .tagging
+        span = "{{tag.name}}"
+        button @click='destroy_tagging(tag.id)' X
+  .clearfix
