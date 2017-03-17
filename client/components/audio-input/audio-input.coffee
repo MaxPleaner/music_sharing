@@ -10,7 +10,7 @@ module.exports = load: ({deps: {Vue, mapState}}) ->
       bandcamp_is_selected: -> @$store.state.source == "bandcamp"
       youtube_is_selected: -> @$store.state.source == "youtube"
       soundcloud_is_selected: -> @$store.state.source == "soundcloud"
-      custom_is_selected: -> @$store.state.source == "custom"
+      # custom_is_selected: -> @$store.state.source == "custom"
     )
 
     methods:
