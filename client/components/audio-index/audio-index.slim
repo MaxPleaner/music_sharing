@@ -1,3 +1,4 @@
 div#audio-index
   template v-for='audio in audios'
-    div v-html='audio.embed_code'
+    div.audio
+      div v-html='audio.embed_code'
