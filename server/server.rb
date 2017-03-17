@@ -40,7 +40,6 @@ class Server < Sinatra::Base
 
   post '/authenticate' do
     cross_origin allow_origin: CLIENT_BASE_URL
-    puts "PARAMS: #{params}"
     if params[:pass]&.eql?(ENV.fetch "PASS")
       ServerToken
     else
@@ -59,7 +58,6 @@ class Server < Sinatra::Base
 
   auth = Proc.new do |request|
     if request.params["server_token"] == ServerToken
-      puts "ALL GOOD"
       nil
     else
       { error: "invalid token" }.to_json
