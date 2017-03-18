@@ -52,6 +52,7 @@ class Tagging < ActiveRecord::Base
 
   before_destroy :remove_tag_if_no_taggings
   def remove_tag_if_no_taggings
+    return unless tag
     tag.destroy if tag.taggings.count == 1
   end
 
