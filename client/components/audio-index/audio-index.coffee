@@ -1,10 +1,12 @@
 module.exports = load: ({deps: {Vue, mapState, Masonry, $}}) ->
 
   window.updateMasonry = ->
-    window.masonry = new Masonry($("#audio-index")[0],
-      itemSelector: ".audio"
-      gutter: 20
-    )
+    setTimeout ->
+      window.masonry = new Masonry($("#audio-index")[0],
+        itemSelector: ".audio"
+        gutter: 20
+      )
+    , 1000
 
   Vue.component "audio-index",
 
@@ -13,20 +15,17 @@ module.exports = load: ({deps: {Vue, mapState, Masonry, $}}) ->
     computed: mapState(['audios'])
 
     data: ->
-      comments: @$store.state.comments
-      tags: @$store.state.tags
+      watched_comments: @$store.state.comments
+      watched_tags: @$store.state.tags
+      watched_audios: @$store.state.comments
 
     watch:
-      comments: (val) ->
-        updateMasonry()
-      tags: (val) ->
-        updateMasonry()
+      watched_comments: (val) -> updateMasonry()
+      watched_tags: (val) -> updateMasonry()
+      watched_audios: (val) -> updateMasonry()
 
-    mounted: ->( setTimeout ->
-      updateMasonry()
-    , 1000)
+    mounted: -> updateMasonry()
 
     methods:
       destroy_audio: (audio) ->
         @$store.dispatch "destroy_audio", id: audio.id
-      updateMasonry: ->
