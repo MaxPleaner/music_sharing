@@ -28,5 +28,8 @@
     "vuex": "^2.2.1",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"
+  },
+  "dependencies": {
+    "masonry-layout": "^4.1.1"
   }
 }

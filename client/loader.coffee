@@ -5,11 +5,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
+Masonry = require 'masonry-layout'
 mapState = Vuex.mapState
 mapActions = Vuex.mapActions
 $ = require 'jquery'
 Cookies = require('cookies-js')
-deps = { Vue, $, Vuex, mapState, mapActions, VueRouter, Cookies }
+deps = {
+  Vue, $, Vuex, mapState, mapActions, VueRouter, Cookies,
+  Masonry
+}
 
 # ------------------------------------------------
 # local files - the ordering should be preserved
@@ -60,7 +64,8 @@ $ ->
       AppClient.Store.commit "SET_AUTHENTICATED", true
       AppClient.Store.commit "SET_SERVER_TOKEN", server_token
       AppClient.init_websockets()
-    .catch ->
+    .catch (e) ->
+      console.dir(e)
       AppClient.Store.commit "PUSH_ERROR", """
         Failed to authenticate.
         Please email maxpleaner@gmail.com for access

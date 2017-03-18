@@ -5,6 +5,9 @@ module.exports = load: ({deps: {Vue, mapState}}) ->
     
     template: require('html-loader!./taggings.slim')
 
+    updated: ->
+      @$parent.$emit "updateMasonry"
+
     computed:
       taggings: ->
         Object.values(@$store.state.taggings).filter (tagging) =>
