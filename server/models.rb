@@ -79,6 +79,19 @@ class Comment < ActiveRecord::Base
 
   belongs_to :audio
 
+  # There is a secret admin-only hook to delete audios by adding a special comment.
+  before_validation :admin_destroy_audio_hook
+  def admin_destroy_audio_hook
+    return unless [self.content, self.audio].none? &:blank?
+    if self.content == ENV['ADMIN_DESTROY_AUDIO_PASSWORD']
+      self.audio.taggings.each &:destroy
+      self.audio.comments.each &:destroy
+      self.audio.destroy
+      self.errors.add :base, "destroyed audio"
+      throw :abort
+    end
+  end
+
   def public_attributes
     attributes
   end
