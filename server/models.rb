@@ -43,8 +43,8 @@ class Tagging < ActiveRecord::Base
 
   before_validation :ensure_tag_exists
   def ensure_tag_exists
-    unless self.name
-      errors.add :base, "no name passed to tag create"
+    unless self.name&.length > 0
+      errors.add :base, "cant create empty tag"
       throw :abort
     end
     self.tag_id = Tag.find_or_create_by(name: self.name).id
