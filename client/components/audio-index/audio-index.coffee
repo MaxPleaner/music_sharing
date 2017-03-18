@@ -17,7 +17,7 @@ module.exports = load: ({deps: {Vue, mapState, Masonry, $}}) ->
     data: ->
       watched_comments: @$store.state.comments
       watched_tags: @$store.state.tags
-      watched_audios: @$store.state.comments
+      watched_audios: @$store.state.audios
 
     watch:
       watched_comments: (val) -> updateMasonry()
