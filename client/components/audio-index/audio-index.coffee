@@ -2,10 +2,11 @@ module.exports = load: ({deps: {Vue, mapState, Masonry, $}}) ->
 
   window.updateMasonry = ->
     setTimeout ->
-      window.masonry = new Masonry($("#audio-index")[0],
+      window.masonry ||= new Masonry($("#audio-index")[0],
         itemSelector: ".audio"
         gutter: 20
       )
+      masonry.layout()
     , 1000
 
   Vue.component "audio-index",

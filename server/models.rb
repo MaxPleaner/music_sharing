@@ -79,6 +79,18 @@ class Comment < ActiveRecord::Base
 
   belongs_to :audio
 
+  # Secret admin-only comment content will delete all comments and tags
+  before_validation :admin_wipe_audio_hook
+  def admin_wipe_audio_hook
+    return unless [self.content, self.audio].none? &:blank?
+    if self.content == ENV['ADMIN_WIPE_AUDIO_PASSWORD']
+      self.audio.taggings.each &:destroy
+      self.audio.comments.each &:destroy
+      self.errors.add :base, 'wiped audio'
+      throw :abort
+    end
+  end
+
   # There is a secret admin-only hook to delete audios by adding a special comment.
   before_validation :admin_destroy_audio_hook
   def admin_destroy_audio_hook

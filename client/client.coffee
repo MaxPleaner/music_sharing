@@ -48,6 +48,7 @@ module.exports = class Client
     @ws.onclose = @ws_onclose
 
   ws_onopen: =>
+    window.ws_connected = true
     @CrudMapper.get_indexes()
     @ws_connect_interval && clearInterval(@ws_connect_interval)
   
@@ -56,7 +57,18 @@ module.exports = class Client
     @CrudMapper.process_ws_message(data)
 
   ws_onclose: (e) =>
-    window.e = e
+    window.ws_connected = false
+    AppClient.Store.commit "DONE_LOADING", false
+    AppClient.Store.commit "SET_AUTHENTICATED", false
+    AppClient.Store.commit "SET_SERVER_TOKEN", null
+    window.ws_reconnect_interval = setInterval ->
+      if server_healthy
+        clearInterval(ws_reconnect_interval)
+      else
+        LoadMusicSharing()
+    , 2000
+
+
     @ws_connect_interval ||= setInterval =>
       @init_websockets()
     , 500

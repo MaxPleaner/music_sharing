@@ -37,12 +37,9 @@ Object.assign deps,
 # Start client side app
 # ------------------------------------------------
 
-# If the server is deployed to Heroku, it could sleep.
-# It gets pinged to awaken, and the page load is delayed
-# until a response is set
+deps.pass = window.location.search.split("?pass=")[1]
 
-
-$ ->
+window.LoadMusicSharing = ({deps}) ->
 
   server_health_url = if process.env["NODE_ENV"] == "production"
     "https://music-sharing.herokuapp.com/health"
@@ -57,9 +54,7 @@ $ ->
 
     AppClient.Store.commit "DONE_LOADING", true
 
-    pass = window.location.search.split("?pass=")[1]
-
-    AppClient.Store.dispatch("authenticate", {pass})
+    AppClient.Store.dispatch("authenticate", {pass: deps.pass})
     .then (server_token) ->
       AppClient.Store.commit "SET_AUTHENTICATED", true
       AppClient.Store.commit "SET_SERVER_TOKEN", server_token
@@ -70,3 +65,7 @@ $ ->
         Failed to authenticate.
         Please email maxpleaner@gmail.com for access
       """     
+
+
+$ -> LoadMusicSharing({deps})
+
