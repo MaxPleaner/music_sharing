@@ -17,7 +17,10 @@ class Audio < ActiveRecord::Base
   def set_embed_code
     instance_eval &(EmbedUrl.build(self.source, self.url, self.video_id))
   rescue JSON::ParserError => e
-    self.errors.add :base, "not a valid url"
+    self.errors.add :base, "not a valid url or video id"
+    throw :abort
+  rescue OpenURI::HTTPError => e
+    self.errors.add :base, "not a valid url or video id"
     throw :abort
   end
   

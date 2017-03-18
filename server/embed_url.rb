@@ -3,7 +3,7 @@
 # Don't fuck with me ...
 module Kernel
   def http_get(url, *args)
-    return "invalid json; bad url passed" unless url.start_with? "http://"
+    return nil unless url.start_with? "http://"
     open(url, *args)
   end
 end
@@ -36,6 +36,9 @@ class EmbedUrl
       if url.blank?
         errors.add "error, no url given"
         throw :abort
+      elsif url.start_with? "https://"
+        errors.add :base, "please use the http:// version of bandcamp urls, not https://"
+        throw :abort
       end
       page = Nokogiri.parse http_get(url, allow_redirections: :safe)
       id_regex = Regexp.escape "tralbum_param: { name: \"album\", value: "
@@ -54,8 +57,17 @@ class EmbedUrl
   def self.youtube source, video_id
     Proc.new do
       if video_id.blank?
-        errors.add "error, no video_id given"
+        errors.add :base, "error, no video_id given"
         throw :abort
+      else
+        page = Nokogiri.parse http_get(
+          "http://www.youtube.com/watch?v=#{video_id}",
+          allow_redirections: :safe
+        )
+        if page.css(".watch-title").empty?
+          errors.add :base, "invalid video id for youtube"
+          throw :abort
+        end
       end
       video_id = ERB::Util.send(:html_escape, self.video_id)
       self.embed_code = <<-HTML
@@ -73,11 +85,17 @@ class EmbedUrl
   def self.soundcloud source, url
     Proc.new do
       if url.blank?
-        errors.add "error, no url given"
+        errors.add :base, "error, no url given"
         throw :abort
       end
-      api_path = "https://soundcloud.com/oembed?format=json&url=#{url}&maxwidth=300&maxheight=160"
-      self.embed_code = JSON.parse(http_get(api_path).read)["html"]
+      api_path = "http://soundcloud.com/oembed?format=json&url=#{url}&maxwidth=300&maxheight=160"
+      embed_api_response = http_get(api_path)
+      if embed_api_response
+        self.embed_code = JSON.parse(embed_api_response.read)["html"]
+      else
+        errors.add :base, "invalid soundcloud url"
+        throw :abort
+      end
     end
   end
 
