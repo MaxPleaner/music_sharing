@@ -19,7 +19,7 @@ _update_ added tags and comments and the ability for anyone to delete anything.
 
 ## How it's made
 
-This is made using my [vue-sinatra-boiler](http://github.com/maxpleaner/vua-sinatra-boiler).
+This is made using my [vue-sinatra-boiler](http://github.com/maxpleaner/vue-sinatra-boiler).
 
 ## Todos
 
